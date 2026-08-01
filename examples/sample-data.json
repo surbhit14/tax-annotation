@@ -1,0 +1,92 @@
+{
+  "clientId": "cli_84a29f",
+  "preparedBy": {
+    "firm": "Instead Tax Partners LLP",
+    "ptin": "P01234567"
+  },
+  "return": {
+    "taxYear": 2025,
+    "filingStatus": "mfj",
+    "digitalAssets": false,
+    "nraSpouseElection": false,
+    "taxpayer": {
+      "firstName": "Avery",
+      "middleInitial": "J",
+      "lastName": "Castellanos-Whitfield",
+      "ssn": "123-45-6789",
+      "occupation": "Senior Mechanical Engineer",
+      "address": {
+        "street": "4128 Juniper Hollow Rd",
+        "apt": "12B",
+        "city": "Boulder",
+        "state": "co",
+        "zip": "80301"
+      }
+    },
+    "spouse": {
+      "firstName": "Priya",
+      "middleInitial": "L",
+      "lastName": "Castellanos-Whitfield",
+      "ssn": "987-65-4321"
+    },
+    "dependents": [
+      {
+        "firstName": "Maya",
+        "lastName": "Castellanos-Whitfield",
+        "ssn": "111-22-3333",
+        "relationship": "Daughter",
+        "credits": "ctc"
+      },
+      {
+        "firstName": "Rohan",
+        "lastName": "Castellanos-Whitfield",
+        "ssn": "222-33-4444",
+        "relationship": "Son",
+        "credits": "ctc"
+      },
+      {
+        "firstName": "Lakshmi",
+        "lastName": "Iyer",
+        "ssn": "333-44-5555",
+        "relationship": "Parent",
+        "credits": "odc"
+      }
+    ],
+    "income": {
+      "w2s": [
+        {
+          "employer": "Vantage Dynamics Inc.",
+          "ein": "12-3456789",
+          "box1": 128450.19,
+          "box2": 19832.5
+        },
+        {
+          "employer": "Front Range Robotics LLC",
+          "ein": "98-7654321",
+          "box1": 61240.55,
+          "box2": 8114.0
+        }
+      ],
+      "interest": {
+        "taxable": 1834.62,
+        "taxExempt": 402.1
+      },
+      "capitalGain": -3000
+    },
+    "totals": {
+      "totalIncome": 188526,
+      "agi": 186290,
+      "totalTax": 27408
+    },
+    "refund": {
+      "directDeposit": {
+        "routingNumber": "102000021",
+        "accountType": "checking",
+        "accountNumber": "8841002739"
+      }
+    },
+    "signature": {
+      "date": "2026-04-10"
+    }
+  }
+}

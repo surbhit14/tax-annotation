@@ -1,0 +1,674 @@
+{
+  "$schema": "../schema/annotation.schema.json",
+  "specVersion": "1.0",
+  "form": {
+    "id": "f1040",
+    "revision": "2025",
+    "title": "U.S. Individual Income Tax Return",
+    "jurisdiction": "US-IRS",
+    "sourcePdf": "f1040--2025.pdf"
+  },
+  "pages": [
+    {
+      "number": 1,
+      "width": 612,
+      "height": 792,
+      "unit": "pt",
+      "origin": "top-left"
+    },
+    {
+      "number": 2,
+      "width": 612,
+      "height": 792,
+      "unit": "pt",
+      "origin": "top-left"
+    }
+  ],
+  "defaults": {
+    "font": {
+      "family": "Helvetica",
+      "size": 8.5,
+      "color": "#000000"
+    },
+    "align": "left",
+    "vAlign": "middle",
+    "padding": 1,
+    "overflow": "shrink",
+    "minFontSize": 5
+  },
+  "fields": [
+    {
+      "id": "taxpayer-name",
+      "label": "First name and middle initial",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 36,
+        "y": 94,
+        "w": 215,
+        "h": 14
+      },
+      "binding": "$.return.taxpayer",
+      "transforms": [
+        {
+          "fn": "concat",
+          "args": {
+            "paths": [
+              "@.firstName",
+              "@.middleInitial"
+            ],
+            "separator": " "
+          }
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "taxpayer-last-name",
+      "label": "Last name",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 253,
+        "y": 94,
+        "w": 214,
+        "h": 14
+      },
+      "binding": "$.return.taxpayer.lastName",
+      "required": true
+    },
+    {
+      "id": "taxpayer-ssn",
+      "label": "Your social security number",
+      "type": "comb",
+      "page": 1,
+      "binding": "$.return.taxpayer.ssn",
+      "required": true,
+      "cells": 9,
+      "cellOrigin": {
+        "x": 468,
+        "y": 95
+      },
+      "pitch": 10.9,
+      "cellSize": {
+        "w": 10.9,
+        "h": 12
+      },
+      "strip": "[^0-9]",
+      "gaps": [
+        {
+          "afterCell": 5,
+          "extra": 5
+        }
+      ]
+    },
+    {
+      "id": "spouse-name",
+      "label": "Spouse first name and middle initial (if joint return)",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 36,
+        "y": 118,
+        "w": 215,
+        "h": 14
+      },
+      "binding": "$.return.spouse",
+      "transforms": [
+        {
+          "fn": "concat",
+          "args": {
+            "paths": [
+              "@.firstName",
+              "@.middleInitial"
+            ],
+            "separator": " "
+          }
+        }
+      ],
+      "required": false,
+      "notes": "Skipped entirely when there is no spouse object in the data."
+    },
+    {
+      "id": "spouse-last-name",
+      "label": "Spouse last name",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 253,
+        "y": 118,
+        "w": 214,
+        "h": 14
+      },
+      "binding": "$.return.spouse.lastName",
+      "required": false
+    },
+    {
+      "id": "spouse-ssn",
+      "label": "Spouse's social security number",
+      "type": "comb",
+      "page": 1,
+      "binding": "$.return.spouse.ssn",
+      "required": false,
+      "cells": 9,
+      "cellOrigin": {
+        "x": 468,
+        "y": 119
+      },
+      "pitch": 10.9,
+      "cellSize": {
+        "w": 10.9,
+        "h": 12
+      },
+      "strip": "[^0-9]",
+      "gaps": [
+        {
+          "afterCell": 5,
+          "extra": 5
+        }
+      ]
+    },
+    {
+      "id": "home-address",
+      "label": "Home address (number and street)",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 36,
+        "y": 142,
+        "w": 381,
+        "h": 14
+      },
+      "binding": "$.return.taxpayer.address.street",
+      "required": true
+    },
+    {
+      "id": "apt-no",
+      "label": "Apt. no.",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 419,
+        "y": 142,
+        "w": 49,
+        "h": 14
+      },
+      "binding": "$.return.taxpayer.address.apt",
+      "required": false
+    },
+    {
+      "id": "city",
+      "label": "City, town, or post office",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 36,
+        "y": 166,
+        "w": 294,
+        "h": 14
+      },
+      "binding": "$.return.taxpayer.address.city",
+      "required": true
+    },
+    {
+      "id": "state",
+      "label": "State",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 332,
+        "y": 166,
+        "w": 63,
+        "h": 14
+      },
+      "binding": "$.return.taxpayer.address.state",
+      "case": "upper",
+      "maxLength": 2,
+      "style": {
+        "align": "center",
+        "overflow": "error"
+      },
+      "required": true
+    },
+    {
+      "id": "zip",
+      "label": "ZIP code",
+      "type": "text",
+      "page": 1,
+      "binding": "$.return.taxpayer.address.zip",
+      "required": true,
+      "rect": {
+        "x": 397,
+        "y": 167,
+        "w": 70,
+        "h": 12
+      }
+    },
+    {
+      "id": "filing-status",
+      "label": "Filing status",
+      "type": "radio-group",
+      "page": 1,
+      "binding": "$.return.filingStatus",
+      "required": true,
+      "mark": "X",
+      "options": [
+        {
+          "value": "single",
+          "rect": {
+            "x": 98,
+            "y": 206,
+            "w": 8,
+            "h": 8
+          },
+          "label": "Single"
+        },
+        {
+          "value": "mfj",
+          "rect": {
+            "x": 98,
+            "y": 218,
+            "w": 8,
+            "h": 8
+          },
+          "label": "Married filing jointly"
+        },
+        {
+          "value": "mfs",
+          "rect": {
+            "x": 98,
+            "y": 230,
+            "w": 8,
+            "h": 8
+          },
+          "label": "Married filing separately"
+        },
+        {
+          "value": "hoh",
+          "rect": {
+            "x": 350,
+            "y": 206,
+            "w": 8,
+            "h": 8
+          },
+          "label": "Head of household"
+        },
+        {
+          "value": "qss",
+          "rect": {
+            "x": 350,
+            "y": 218,
+            "w": 8,
+            "h": 8
+          },
+          "label": "Qualifying surviving spouse"
+        }
+      ]
+    },
+    {
+      "id": "nra-spouse-election",
+      "label": "Treating a nonresident alien spouse as a U.S. resident",
+      "type": "checkbox",
+      "page": 1,
+      "rect": {
+        "x": 98,
+        "y": 258,
+        "w": 8,
+        "h": 8
+      },
+      "binding": "$.return.nraSpouseElection",
+      "checkedWhen": {
+        "truthy": true
+      },
+      "required": false
+    },
+    {
+      "id": "digital-assets",
+      "label": "Digital assets question (Yes/No)",
+      "type": "radio-group",
+      "page": 1,
+      "binding": "$.return.digitalAssets",
+      "required": true,
+      "mark": "X",
+      "options": [
+        {
+          "value": true,
+          "rect": {
+            "x": 518,
+            "y": 287,
+            "w": 8,
+            "h": 8
+          },
+          "label": "Yes"
+        },
+        {
+          "value": false,
+          "rect": {
+            "x": 554,
+            "y": 287,
+            "w": 8,
+            "h": 8
+          },
+          "label": "No"
+        }
+      ],
+      "notes": "Option values are the JSON booleans true/false; exactly one box marks, enforced by the radio-group type."
+    },
+    {
+      "id": "dependents",
+      "label": "Dependents (the 2025 form lays the four dependents out LEFT-TO-RIGHT as grid columns, hence dx=108, dy=0)",
+      "type": "table",
+      "page": 1,
+      "binding": "$.return.dependents",
+      "required": false,
+      "overflow": "continuation",
+      "repeat": {
+        "max": 4,
+        "dx": 108,
+        "dy": 0
+      },
+      "columns": [
+        {
+          "id": "dep-first-name",
+          "label": "(1) First name",
+          "type": "text",
+          "rect": {
+            "x": 145,
+            "y": 309,
+            "w": 106,
+            "h": 12
+          },
+          "binding": "@.firstName",
+          "required": true
+        },
+        {
+          "id": "dep-last-name",
+          "label": "(2) Last name",
+          "type": "text",
+          "rect": {
+            "x": 145,
+            "y": 321,
+            "w": 106,
+            "h": 12
+          },
+          "binding": "@.lastName",
+          "required": true
+        },
+        {
+          "id": "dep-ssn",
+          "label": "(3) Social security number",
+          "type": "comb",
+          "binding": "@.ssn",
+          "required": true,
+          "cells": 9,
+          "cellOrigin": {
+            "x": 144,
+            "y": 333
+          },
+          "pitch": 12,
+          "cellSize": {
+            "w": 12,
+            "h": 12
+          },
+          "strip": "[^0-9]"
+        },
+        {
+          "id": "dep-relationship",
+          "label": "(4) Relationship to you",
+          "type": "text",
+          "rect": {
+            "x": 145,
+            "y": 345,
+            "w": 106,
+            "h": 12
+          },
+          "binding": "@.relationship",
+          "required": true
+        },
+        {
+          "id": "dep-ctc",
+          "label": "(7) Child tax credit box",
+          "type": "checkbox",
+          "rect": {
+            "x": 148,
+            "y": 404,
+            "w": 8,
+            "h": 8
+          },
+          "binding": "@.credits",
+          "checkedWhen": {
+            "equals": "ctc"
+          },
+          "required": false
+        },
+        {
+          "id": "dep-odc",
+          "label": "(7) Credit for other dependents box",
+          "type": "checkbox",
+          "rect": {
+            "x": 198,
+            "y": 404,
+            "w": 8,
+            "h": 8
+          },
+          "binding": "@.credits",
+          "checkedWhen": {
+            "equals": "odc"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "line-1a",
+      "label": "Line 1a — Total amount from Form(s) W-2, box 1",
+      "type": "currency",
+      "page": 1,
+      "rect": {
+        "x": 504,
+        "y": 450,
+        "w": 72,
+        "h": 12
+      },
+      "binding": "$.return.income.w2s",
+      "transforms": [
+        {
+          "fn": "sum",
+          "args": {
+            "path": "@.box1"
+          }
+        }
+      ],
+      "required": true,
+      "notes": "Computed at render time: sums box 1 across all W-2s in the data set."
+    },
+    {
+      "id": "line-2b",
+      "label": "Line 2b — Taxable interest",
+      "type": "currency",
+      "page": 1,
+      "rect": {
+        "x": 504,
+        "y": 570,
+        "w": 72,
+        "h": 12
+      },
+      "binding": "$.return.income.interest.taxable",
+      "required": false
+    },
+    {
+      "id": "line-7a",
+      "label": "Line 7a — Capital gain or (loss)",
+      "type": "currency",
+      "page": 1,
+      "rect": {
+        "x": 504,
+        "y": 690,
+        "w": 72,
+        "h": 12
+      },
+      "binding": "$.return.income.capitalGain",
+      "required": false,
+      "format": {
+        "negative": "parens"
+      },
+      "notes": "A loss prints as (3,000) per IRS convention."
+    },
+    {
+      "id": "line-9",
+      "label": "Line 9 — Total income",
+      "type": "currency",
+      "page": 1,
+      "rect": {
+        "x": 504,
+        "y": 726,
+        "w": 72,
+        "h": 12
+      },
+      "binding": "$.return.totals.totalIncome",
+      "required": true,
+      "style": {
+        "overflow": "error"
+      },
+      "notes": "overflow:error — a total that cannot be printed in full must fail the render, never shrink below legibility or truncate."
+    },
+    {
+      "id": "line-11a",
+      "label": "Line 11a — Adjusted gross income",
+      "type": "currency",
+      "page": 1,
+      "rect": {
+        "x": 504,
+        "y": 750,
+        "w": 72,
+        "h": 12
+      },
+      "binding": "$.return.totals.agi",
+      "required": true,
+      "style": {
+        "overflow": "error"
+      }
+    },
+    {
+      "id": "line-24",
+      "label": "Line 24 — Total tax",
+      "type": "currency",
+      "page": 2,
+      "rect": {
+        "x": 504,
+        "y": 252,
+        "w": 72,
+        "h": 12
+      },
+      "binding": "$.return.totals.totalTax",
+      "required": true,
+      "style": {
+        "overflow": "error"
+      }
+    },
+    {
+      "id": "routing-number",
+      "label": "Refund — routing number (line 35b)",
+      "type": "comb",
+      "page": 2,
+      "binding": "$.return.refund.directDeposit.routingNumber",
+      "required": false,
+      "cells": 9,
+      "cellOrigin": {
+        "x": 180,
+        "y": 504
+      },
+      "pitch": 14.4,
+      "cellSize": {
+        "w": 14.4,
+        "h": 11
+      },
+      "strip": "[^0-9]"
+    },
+    {
+      "id": "account-type",
+      "label": "Refund — account type (line 35c)",
+      "type": "radio-group",
+      "page": 2,
+      "binding": "$.return.refund.directDeposit.accountType",
+      "required": false,
+      "mark": "X",
+      "options": [
+        {
+          "value": "checking",
+          "rect": {
+            "x": 377,
+            "y": 506,
+            "w": 8,
+            "h": 8
+          },
+          "label": "Checking"
+        },
+        {
+          "value": "savings",
+          "rect": {
+            "x": 435,
+            "y": 506,
+            "w": 8,
+            "h": 8
+          },
+          "label": "Savings"
+        }
+      ]
+    },
+    {
+      "id": "account-number",
+      "label": "Refund — account number (line 35d)",
+      "type": "comb",
+      "page": 2,
+      "binding": "$.return.refund.directDeposit.accountNumber",
+      "required": false,
+      "cells": 17,
+      "cellOrigin": {
+        "x": 180,
+        "y": 516
+      },
+      "pitch": 14.4,
+      "cellSize": {
+        "w": 14.4,
+        "h": 11
+      },
+      "strip": "[^0-9A-Za-z]",
+      "fit": "left",
+      "notes": "Account numbers may be shorter than the form's 17 boxes; fit:left fills from the first cell and leaves the rest blank."
+    },
+    {
+      "id": "occupation",
+      "label": "Your occupation",
+      "type": "text",
+      "page": 2,
+      "rect": {
+        "x": 325,
+        "y": 646,
+        "w": 130,
+        "h": 18
+      },
+      "binding": "$.return.taxpayer.occupation",
+      "required": false,
+      "style": {
+        "overflow": "truncate"
+      },
+      "notes": "Cosmetic field; truncation is acceptable here."
+    },
+    {
+      "id": "signature-date",
+      "label": "Date signed",
+      "type": "date",
+      "page": 2,
+      "rect": {
+        "x": 278,
+        "y": 648,
+        "w": 46,
+        "h": 16
+      },
+      "binding": "$.return.signature.date",
+      "pattern": "MM/DD/YYYY",
+      "required": false
+    }
+  ]
+}
