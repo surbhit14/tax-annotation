@@ -10,7 +10,6 @@ data set into exactly the right boxes on the form.
 |------|------------|
 | [`SPEC.md`](SPEC.md) | **The specification.** Normative prose: coordinate system, field types, formatting rules, data-binding grammar, and the rendering contract an implementation must follow. |
 | [`DESIGN.md`](DESIGN.md) | The *why*: key design decisions, trade-offs considered, and future enhancements. |
-| [`WALKTHROUGH.md`](WALKTHROUGH.md) | Code & architecture tour: the format's anatomy, schema/type construction, and a function-by-function walk through the renderer. |
 | [`schema/annotation.schema.json`](schema/annotation.schema.json) | JSON Schema (draft 2020-12) for validating annotation documents. |
 | [`types/annotation.ts`](types/annotation.ts) | TypeScript definitions mirroring the schema — the shape an implementation consumes. |
 | [`examples/f1040.annotation.json`](examples/f1040.annotation.json) | A worked annotation of Form 1040 (2025) exercising every field type. |
