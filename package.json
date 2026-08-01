@@ -1,0 +1,20 @@
+{
+  "name": "tax-form-annotation-spec",
+  "version": "1.0.0",
+  "description": "Specification for annotating fields/boxes on U.S. tax forms, plus a proof-of-concept renderer that fills the real Form 1040 from a nested data set.",
+  "type": "commonjs",
+  "scripts": {
+    "validate": "npx --yes ajv-cli validate --spec=draft2020 --strict=false -s schema/annotation.schema.json -d examples/f1040.annotation.json",
+    "build": "tsc",
+    "demo": "npm run build && node dist/renderer/render.js examples/f1040.annotation.json examples/sample-data.json examples/f1040--2025.pdf out/f1040-filled.pdf",
+    "demo:debug": "npm run build && node dist/renderer/render.js examples/f1040.annotation.json examples/sample-data.json examples/f1040--2025.pdf out/f1040-debug.pdf --debug"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "typescript": "^7.0.2"
+  }
+}
