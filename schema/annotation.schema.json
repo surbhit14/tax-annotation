@@ -1,0 +1,386 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spec.instead.example/tax-form-annotation/1.0/annotation.schema.json",
+  "title": "Tax Form Annotation Document",
+  "description": "Describes where and how to print values from a nested data set onto a U.S. tax form. See SPEC.md for normative prose.",
+  "type": "object",
+  "required": ["specVersion", "form", "pages", "fields"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional pointer to this schema, for editor tooling."
+    },
+    "specVersion": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Version of this annotation specification."
+    },
+    "form": {
+      "type": "object",
+      "required": ["id", "revision"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "Stable form identifier, e.g. \"f1040\", \"f1040-sr\", \"w2\"."
+        },
+        "revision": {
+          "type": "string",
+          "description": "Form revision, normally the tax year, e.g. \"2025\". Box positions are only valid for this revision."
+        },
+        "title": { "type": "string", "description": "Human-readable form title." },
+        "jurisdiction": {
+          "type": "string",
+          "default": "US-IRS",
+          "description": "Issuing authority, e.g. \"US-IRS\", \"US-CA-FTB\"."
+        },
+        "sourcePdf": {
+          "type": "string",
+          "description": "Filename or URI of the blank form PDF these coordinates were measured against."
+        }
+      }
+    },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per annotated page. Establishes the coordinate space.",
+      "items": {
+        "type": "object",
+        "required": ["number", "width", "height"],
+        "additionalProperties": false,
+        "properties": {
+          "number": { "type": "integer", "minimum": 1, "description": "1-based page number in the source PDF." },
+          "width": { "type": "number", "exclusiveMinimum": 0, "description": "Page width in points (1/72 in). US Letter = 612." },
+          "height": { "type": "number", "exclusiveMinimum": 0, "description": "Page height in points. US Letter = 792." },
+          "unit": { "type": "string", "const": "pt", "default": "pt" },
+          "origin": { "type": "string", "const": "top-left", "default": "top-left" }
+        }
+      }
+    },
+    "defaults": {
+      "$ref": "#/$defs/style",
+      "description": "Document-wide style defaults. Any field may override any property."
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/field" }
+    }
+  },
+
+  "$defs": {
+    "binding": {
+      "type": "string",
+      "pattern": "^[$@]\\.[A-Za-z_][A-Za-z0-9_]*(\\[[0-9]+\\])?(\\.[A-Za-z_][A-Za-z0-9_]*(\\[[0-9]+\\])?)*$|^[$@]$",
+      "description": "Path into the data set. \"$\" is the data-set root; \"@\" is the current row item (valid only inside table columns). See SPEC.md §6."
+    },
+
+    "rect": {
+      "type": "object",
+      "required": ["x", "y", "w", "h"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number", "minimum": 0, "description": "Left edge, points from page left edge." },
+        "y": { "type": "number", "minimum": 0, "description": "Top edge, points from page top edge." },
+        "w": { "type": "number", "exclusiveMinimum": 0, "description": "Width in points." },
+        "h": { "type": "number", "exclusiveMinimum": 0, "description": "Height in points." }
+      }
+    },
+
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "font": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "family": { "type": "string", "default": "Helvetica" },
+            "size": { "type": "number", "exclusiveMinimum": 0, "default": 9 },
+            "weight": { "type": "string", "enum": ["normal", "bold"], "default": "normal" },
+            "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$", "default": "#000000" }
+          }
+        },
+        "align": { "type": "string", "enum": ["left", "center", "right"], "default": "left" },
+        "vAlign": { "type": "string", "enum": ["top", "middle", "bottom"], "default": "middle" },
+        "padding": { "type": "number", "minimum": 0, "default": 2, "description": "Inset in points applied to all four rect edges before drawing." },
+        "overflow": {
+          "type": "string",
+          "enum": ["shrink", "truncate", "error"],
+          "default": "shrink",
+          "description": "What to do when formatted text will not fit the rect at the requested size. See SPEC.md §7.4."
+        },
+        "minFontSize": { "type": "number", "exclusiveMinimum": 0, "default": 5, "description": "Floor for \"shrink\" overflow. Below this, fall back to \"error\"." },
+        "lineHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Multiplier for multiline text. Default 1.15." }
+      }
+    },
+
+    "transform": {
+      "description": "A transform step: either a bare name or a name with arguments. See SPEC.md §6.4 for the built-in set.",
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "required": ["fn"],
+          "additionalProperties": false,
+          "properties": {
+            "fn": { "type": "string", "minLength": 1 },
+            "args": { "type": "object" }
+          }
+        }
+      ]
+    },
+
+    "fieldBase": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+          "description": "Unique within the document. Convention: the form's own line label, e.g. \"line-1a\", \"filing-status\"."
+        },
+        "label": { "type": "string", "description": "Human-readable description; not rendered." },
+        "type": {
+          "type": "string",
+          "enum": ["text", "number", "currency", "date", "comb", "checkbox", "radio-group", "table"]
+        },
+        "page": { "type": "integer", "minimum": 1 },
+        "binding": { "$ref": "#/$defs/binding" },
+        "required": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, a missing/null resolved value is a render error. If false, the field is skipped."
+        },
+        "default": { "description": "Value used when the binding resolves to missing/null and required is false. Any JSON type." },
+        "transforms": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/transform" },
+          "description": "Applied left-to-right to the resolved value, before formatting."
+        },
+        "style": { "$ref": "#/$defs/style", "description": "Overrides of document defaults for this field." },
+        "notes": { "type": "string", "description": "Annotator commentary; not rendered." }
+      }
+    },
+
+    "field": {
+      "allOf": [{ "$ref": "#/$defs/fieldBase" }, { "required": ["page"] }],
+      "oneOf": [
+        { "$ref": "#/$defs/textField" },
+        { "$ref": "#/$defs/numberField" },
+        { "$ref": "#/$defs/currencyField" },
+        { "$ref": "#/$defs/dateField" },
+        { "$ref": "#/$defs/combField" },
+        { "$ref": "#/$defs/checkboxField" },
+        { "$ref": "#/$defs/radioGroupField" },
+        { "$ref": "#/$defs/tableField" }
+      ]
+    },
+
+    "textField": {
+      "type": "object",
+      "required": ["type", "rect", "binding"],
+      "properties": {
+        "type": { "const": "text" },
+        "rect": { "$ref": "#/$defs/rect" },
+        "multiline": { "type": "boolean", "default": false },
+        "maxLength": { "type": "integer", "minimum": 1, "description": "Hard cap on characters after formatting; excess is handled per overflow policy." },
+        "case": { "type": "string", "enum": ["preserve", "upper"], "default": "preserve" }
+      }
+    },
+
+    "numberField": {
+      "type": "object",
+      "required": ["type", "rect", "binding"],
+      "properties": {
+        "type": { "const": "number" },
+        "rect": { "$ref": "#/$defs/rect" },
+        "format": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "decimals": { "type": "integer", "minimum": 0, "default": 0 },
+            "thousands": { "type": "boolean", "default": true },
+            "negative": { "type": "string", "enum": ["parens", "minus"], "default": "parens" },
+            "zero": { "type": "string", "enum": ["print", "blank", "dash"], "default": "print" }
+          }
+        }
+      }
+    },
+
+    "currencyField": {
+      "type": "object",
+      "required": ["type", "rect", "binding"],
+      "properties": {
+        "type": { "const": "currency" },
+        "rect": { "$ref": "#/$defs/rect" },
+        "format": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "decimals": { "type": "integer", "enum": [0, 2], "default": 0, "description": "0 = whole-dollar rounding (IRS default), 2 = dollars and cents." },
+            "thousands": { "type": "boolean", "default": true },
+            "symbol": { "type": "boolean", "default": false, "description": "Print a leading \"$\". Almost always false on IRS forms." },
+            "negative": { "type": "string", "enum": ["parens", "minus"], "default": "parens" },
+            "zero": { "type": "string", "enum": ["print", "blank", "dash"], "default": "print" }
+          }
+        }
+      }
+    },
+
+    "dateField": {
+      "type": "object",
+      "required": ["type", "rect", "binding"],
+      "properties": {
+        "type": { "const": "date" },
+        "rect": { "$ref": "#/$defs/rect" },
+        "pattern": {
+          "type": "string",
+          "default": "MM/DD/YYYY",
+          "description": "Output pattern using tokens YYYY, YY, MM, DD. Input value must be an ISO-8601 date string (YYYY-MM-DD)."
+        }
+      }
+    },
+
+    "combField": {
+      "type": "object",
+      "required": ["type", "binding", "cells", "cellOrigin", "pitch", "cellSize"],
+      "properties": {
+        "type": { "const": "comb" },
+        "cells": { "type": "integer", "minimum": 1, "description": "Number of single-character boxes." },
+        "cellOrigin": {
+          "type": "object",
+          "required": ["x", "y"],
+          "additionalProperties": false,
+          "properties": {
+            "x": { "type": "number", "minimum": 0 },
+            "y": { "type": "number", "minimum": 0 }
+          },
+          "description": "Top-left of the FIRST cell."
+        },
+        "pitch": { "type": "number", "exclusiveMinimum": 0, "description": "Horizontal distance in points between the left edges of adjacent cells." },
+        "cellSize": {
+          "type": "object",
+          "required": ["w", "h"],
+          "additionalProperties": false,
+          "properties": {
+            "w": { "type": "number", "exclusiveMinimum": 0 },
+            "h": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["afterCell", "extra"],
+            "additionalProperties": false,
+            "properties": {
+              "afterCell": { "type": "integer", "minimum": 1, "description": "1-based cell index after which extra spacing occurs (e.g. SSN hyphen gaps after cells 3 and 5)." },
+              "extra": { "type": "number", "minimum": 0, "description": "Extra points added beyond the normal pitch." }
+            }
+          }
+        },
+        "strip": {
+          "type": "string",
+          "description": "Regex (ECMA-262) of characters to remove from the value before filling cells, e.g. \"[^0-9]\" for an SSN.",
+          "default": "[^0-9A-Za-z]"
+        },
+        "fit": {
+          "type": "string",
+          "enum": ["exact", "left"],
+          "default": "exact",
+          "description": "\"exact\": stripped value length MUST equal cells (SSN, EIN, ZIP). \"left\": length MUST be <= cells; fill from cell 1, leave the rest blank (bank account numbers)."
+        }
+      }
+    },
+
+    "checkboxField": {
+      "type": "object",
+      "required": ["type", "rect", "binding", "checkedWhen"],
+      "properties": {
+        "type": { "const": "checkbox" },
+        "rect": { "$ref": "#/$defs/rect" },
+        "checkedWhen": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "maxProperties": 1,
+          "properties": {
+            "equals": { "description": "Mark when resolved value strictly equals this (any JSON scalar)." },
+            "truthy": { "type": "boolean", "const": true, "description": "Mark when resolved value is truthy (not false/null/0/\"\")." }
+          }
+        },
+        "mark": { "type": "string", "enum": ["X", "check", "fill"], "default": "X" }
+      }
+    },
+
+    "radioGroupField": {
+      "type": "object",
+      "required": ["type", "binding", "options"],
+      "properties": {
+        "type": { "const": "radio-group" },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["value", "rect"],
+            "additionalProperties": false,
+            "properties": {
+              "value": { "description": "Mark this option when the resolved value strictly equals this (any JSON scalar)." },
+              "rect": { "$ref": "#/$defs/rect" },
+              "label": { "type": "string" }
+            }
+          }
+        },
+        "mark": { "type": "string", "enum": ["X", "check", "fill"], "default": "X" }
+      }
+    },
+
+    "tableField": {
+      "type": "object",
+      "required": ["type", "binding", "repeat", "columns"],
+      "properties": {
+        "type": { "const": "table" },
+        "repeat": {
+          "type": "object",
+          "required": ["max"],
+          "additionalProperties": false,
+          "properties": {
+            "max": { "type": "integer", "minimum": 1, "description": "Number of printed entries the form provides." },
+            "dx": { "type": "number", "default": 0, "description": "Horizontal offset (pt) between consecutive entries. E.g. 108 for the 2025 Form 1040 dependents grid, whose entries run left-to-right." },
+            "dy": { "type": "number", "default": 0, "description": "Vertical offset (pt) between consecutive entries. E.g. the row height for a classic top-to-bottom table like Schedule B." }
+          },
+          "description": "Entry i (1-based) is drawn offset by ((i-1)*dx, (i-1)*dy) from the columns' stated positions. At least one of dx/dy MUST be non-zero when max > 1."
+        },
+        "overflow": {
+          "type": "string",
+          "enum": ["continuation", "truncate", "error"],
+          "default": "error",
+          "description": "Behavior when the bound array has more items than repeat.max. See SPEC.md §5.8."
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/column" }
+        }
+      }
+    },
+
+    "column": {
+      "description": "A column is any non-table field, positioned for ENTRY 1 only; the renderer offsets it by repeat.dx/dy per entry. Bindings inside columns use \"@\" (current entry item).",
+      "allOf": [{ "$ref": "#/$defs/fieldBase" }],
+      "oneOf": [
+        { "$ref": "#/$defs/textField" },
+        { "$ref": "#/$defs/numberField" },
+        { "$ref": "#/$defs/currencyField" },
+        { "$ref": "#/$defs/dateField" },
+        { "$ref": "#/$defs/combField" },
+        { "$ref": "#/$defs/checkboxField" }
+      ],
+      "not": { "properties": { "type": { "enum": ["table", "radio-group"] } } }
+    }
+  }
+}
