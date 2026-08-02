@@ -1,5 +1,5 @@
 {
-  "$schema": "../schema/annotation.schema.json",
+  "$schema": "../../schema/annotation.schema.json",
   "specVersion": "1.0",
   "form": {
     "id": "f1040",

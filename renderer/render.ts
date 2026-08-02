@@ -21,6 +21,7 @@
  * blank form.
  */
 import * as fs from "fs";
+import * as path from "path";
 import { PDFDocument, PDFFont, PDFPage, StandardFonts, rgb } from "pdf-lib";
 import type {
   AnnotationDocument,
@@ -546,6 +547,7 @@ async function main(): Promise<void> {
   // The whole render is just: every field in the annotation, once.
   for (const field of ann.fields) renderField(field);
 
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, await pdf.save());
   console.log(`wrote ${outPath}${DEBUG ? " (debug outlines on)" : ""}`);
   for (const w of warnings) console.log(`warning: ${w}`);
