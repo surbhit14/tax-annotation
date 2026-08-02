@@ -24,20 +24,20 @@ data set into exactly the right boxes on the form.
 ## The idea in one diagram
 
 ```
-┌────────────────────┐     ┌──────────────────────┐     ┌────────────────┐
-│ Annotation document │     │ Caller's data set    │     │ Blank form PDF │
-│ f1040.annotation    │     │ (any nested JSON)    │     │ f1040--2025    │
-└─────────┬──────────┘     └──────────┬───────────┘     └───────┬────────┘
-          │      where + how               what                  on what
-          └──────────────┬────────────────┴─────────────────────┘
-                         ▼
-              ┌─────────────────────┐
-              │  Renderer           │   (anyone's proprietary code,
-              │  resolve → transform │    written once, form-agnostic —
-              │  → format → draw     │    per the contract in SPEC.md §7)
-              └─────────┬───────────┘
-                        ▼
-               Completed Form 1040
+┌──────────────────────┐   ┌──────────────────────┐   ┌────────────────┐
+│ Annotation document  │   │ Caller's data set    │   │ Blank form PDF │
+│ f1040.annotation     │   │ (any nested JSON)    │   │ f1040--2025    │
+└──────────┬───────────┘   └──────────┬───────────┘   └───────┬────────┘
+           │ where + how              │ what                  │ on what
+           └──────────────────────────┼───────────────────────┘
+                                      ▼
+                         ┌────────────────────────┐
+                         │ Renderer               │  (anyone's proprietary code,
+                         │ resolve → transform    │   written once, form-agnostic —
+                         │ → format → draw        │   per the contract in SPEC.md §7)
+                         └────────────┬───────────┘
+                                      ▼
+                            Completed Form 1040
 ```
 
 The annotation document is the entire contract between the three parties. A tax expert
