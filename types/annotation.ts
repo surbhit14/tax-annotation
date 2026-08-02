@@ -2,10 +2,20 @@
  * Tax Form Annotation Specification — TypeScript definitions
  * specVersion 1.0
  *
- * These types mirror schema/annotation.schema.json. The JSON Schema is the
- * validation source of truth; these types are what an implementation consumes.
- * Normative behavior (binding resolution, formatting, overflow) is defined in
- * SPEC.md.
+ * These types mirror schema/annotation.schema.json. The format is one contract
+ * expressed three ways, for three audiences:
+ *
+ *   SPEC.md                  — normative prose, for humans: behavior that
+ *                              structure can't express (rounding, overflow,
+ *                              error rules).
+ *   annotation.schema.json   — machine validation of annotation FILES, at
+ *                              authoring time.
+ *   this file                — compile-time checking of implementers' CODE:
+ *                              a renderer that imports these types gets the
+ *                              schema's rules enforced by its own compiler.
+ *
+ * The JSON Schema is the validation source of truth; these types are what an
+ * implementation consumes.
  */
 
 /** Root document: one annotation per (form id, revision). */

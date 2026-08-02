@@ -9,6 +9,10 @@
  * annotation files (e.g. the switch on field.type narrows the Field union:
  * inside `case "comb"` the compiler knows cellOrigin exists and rect doesn't).
  *
+ * Deliberately form-agnostic: the string "1040" appears nowhere below. All
+ * form knowledge arrives in the annotation document; hand this same program a
+ * W-2 annotation and it renders W-2s.
+ *
  * Usage (via `npm run demo`, which compiles first):
  *   node dist/renderer/render.js <annotation.json> <data.json> <blank.pdf> <out.pdf> [--debug]
  *

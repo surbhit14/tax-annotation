@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://spec.instead.example/tax-form-annotation/1.0/annotation.schema.json",
   "title": "Tax Form Annotation Document",
-  "description": "Describes where and how to print values from a nested data set onto a U.S. tax form. See SPEC.md for normative prose.",
+  "description": "Describes where and how to print values from a nested data set onto a U.S. tax form. This schema is the machine-validation half of the contract: SPEC.md defines the normative behavior in prose, and types/annotation.ts mirrors this schema for compile-time checking in implementers' code.",
   "type": "object",
   "required": ["specVersion", "form", "pages", "fields"],
   "additionalProperties": false,
