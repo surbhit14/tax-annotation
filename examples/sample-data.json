@@ -69,7 +69,21 @@
       ],
       "interest": {
         "taxable": 1834.62,
-        "taxExempt": 402.1
+        "taxExempt": 402.1,
+        "payers": [
+          {
+            "name": "First Peak Credit Union",
+            "amount": 612.4
+          },
+          {
+            "name": "Vanguard Federal Money Market Fund",
+            "amount": 987.33
+          },
+          {
+            "name": "U.S. Treasury — Series I Savings Bonds",
+            "amount": 234.89
+          }
+        ]
       },
       "capitalGain": -3000
     },
@@ -77,6 +91,10 @@
       "totalIncome": 188526,
       "agi": 186290,
       "totalTax": 27408
+    },
+    "foreign": {
+      "account": false,
+      "trust": false
     },
     "refund": {
       "directDeposit": {

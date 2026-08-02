@@ -1,0 +1,346 @@
+{
+  "$schema": "../../schema/annotation.schema.json",
+  "specVersion": "1.0",
+  "form": {
+    "id": "f1040sb",
+    "revision": "2025",
+    "title": "Schedule B (Form 1040) — Interest and Ordinary Dividends",
+    "jurisdiction": "US-IRS",
+    "sourcePdf": "f1040sb--2025.pdf"
+  },
+  "pages": [
+    {
+      "number": 1,
+      "width": 612,
+      "height": 792,
+      "unit": "pt",
+      "origin": "top-left"
+    }
+  ],
+  "defaults": {
+    "font": {
+      "family": "Helvetica",
+      "size": 8.5,
+      "color": "#000000"
+    },
+    "align": "left",
+    "vAlign": "middle",
+    "padding": 1,
+    "overflow": "shrink",
+    "minFontSize": 5
+  },
+  "fields": [
+    {
+      "id": "name-on-return",
+      "label": "Name(s) shown on return",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 36,
+        "y": 94,
+        "w": 431,
+        "h": 14
+      },
+      "binding": "$.return.taxpayer",
+      "transforms": [
+        {
+          "fn": "concat",
+          "args": {
+            "paths": [
+              "@.firstName",
+              "@.middleInitial",
+              "@.lastName"
+            ],
+            "separator": " "
+          }
+        }
+      ],
+      "required": true,
+      "notes": "Primary taxpayer's full name. (A future 'literal' concat arg would allow the joint 'A & B Lastname' style.)"
+    },
+    {
+      "id": "ssn",
+      "label": "Your social security number",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 468,
+        "y": 94,
+        "w": 108,
+        "h": 14
+      },
+      "binding": "$.return.taxpayer.ssn",
+      "required": true,
+      "notes": "Unlike the 1040, Schedule B's SSN box has no printed digit dividers (verified against the form's vector graphics), so this is a plain text box, not a comb."
+    },
+    {
+      "id": "line-1-payers",
+      "label": "Line 1 — List name of payer / Amount (interest)",
+      "type": "table",
+      "page": 1,
+      "binding": "$.return.income.interest.payers",
+      "repeat": {
+        "max": 14,
+        "dx": 0,
+        "dy": 12
+      },
+      "overflow": "continuation",
+      "columns": [
+        {
+          "id": "payer-name",
+          "type": "text",
+          "rect": {
+            "x": 129.6,
+            "y": 144,
+            "w": 331,
+            "h": 12
+          },
+          "binding": "@.name",
+          "required": true
+        },
+        {
+          "id": "payer-amount",
+          "type": "currency",
+          "rect": {
+            "x": 489.6,
+            "y": 144,
+            "w": 86.4,
+            "h": 12
+          },
+          "binding": "@.amount",
+          "required": true
+        }
+      ],
+      "notes": "Classic top-to-bottom table: the form provides 14 printed rows at a 12 pt pitch, so entries repeat straight down (dy) — the mirror image of the 1040's left-to-right dependents grid (dx)."
+    },
+    {
+      "id": "line-2",
+      "label": "Line 2 — Total interest",
+      "type": "currency",
+      "page": 1,
+      "rect": {
+        "x": 489.6,
+        "y": 312,
+        "w": 86.4,
+        "h": 12
+      },
+      "binding": "$.return.income.interest.payers",
+      "transforms": [
+        {
+          "fn": "sum",
+          "args": {
+            "path": "@.amount"
+          }
+        }
+      ],
+      "required": true,
+      "notes": "Computed at render time. The sum runs over the raw cent values and is rounded once at formatting — not a sum of already-rounded rows."
+    },
+    {
+      "id": "line-3",
+      "label": "Line 3 — Excludable interest on series EE and I U.S. savings bonds",
+      "type": "currency",
+      "page": 1,
+      "rect": {
+        "x": 489.6,
+        "y": 336,
+        "w": 86.4,
+        "h": 12
+      },
+      "binding": "$.return.income.interest.excludable",
+      "required": false,
+      "notes": "Not present in the sample data set: not required and no default, so the box is left blank (SPEC §6.3)."
+    },
+    {
+      "id": "line-4",
+      "label": "Line 4 — Subtract line 3 from line 2",
+      "type": "currency",
+      "page": 1,
+      "rect": {
+        "x": 489.6,
+        "y": 348,
+        "w": 86.4,
+        "h": 12
+      },
+      "binding": "$.return.income.interest.payers",
+      "transforms": [
+        {
+          "fn": "sum",
+          "args": {
+            "path": "@.amount"
+          }
+        }
+      ],
+      "required": true,
+      "notes": "Line 2 minus line 3; this data set has no excludable interest, so the same sum applies. Carries to Form 1040 line 2b. (A future cross-field arithmetic transform would express the subtraction declaratively.)"
+    },
+    {
+      "id": "line-5-payers",
+      "label": "Line 5 — List name of payer / Amount (ordinary dividends)",
+      "type": "table",
+      "page": 1,
+      "binding": "$.return.income.dividends.payers",
+      "repeat": {
+        "max": 16,
+        "dx": 0,
+        "dy": 12
+      },
+      "overflow": "continuation",
+      "columns": [
+        {
+          "id": "payer-name",
+          "type": "text",
+          "rect": {
+            "x": 201.6,
+            "y": 372,
+            "w": 259,
+            "h": 12
+          },
+          "binding": "@.name",
+          "required": true
+        },
+        {
+          "id": "payer-amount",
+          "type": "currency",
+          "rect": {
+            "x": 489.6,
+            "y": 372,
+            "w": 86.4,
+            "h": 12
+          },
+          "binding": "@.amount",
+          "required": true
+        }
+      ],
+      "notes": "The sample data set has no dividends: the binding resolves to missing and the table is not required, so Part II is skipped entirely. Row 1's name box is narrower than rows 2-16 (the printed '5' label indents it); the row-1 rect is used for every entry and stays inside the wider boxes."
+    },
+    {
+      "id": "line-6",
+      "label": "Line 6 — Total ordinary dividends",
+      "type": "currency",
+      "page": 1,
+      "rect": {
+        "x": 489.6,
+        "y": 552,
+        "w": 86.4,
+        "h": 12
+      },
+      "binding": "$.return.income.dividends.payers",
+      "transforms": [
+        {
+          "fn": "sum",
+          "args": {
+            "path": "@.amount"
+          }
+        }
+      ],
+      "required": false,
+      "notes": "Skipped for the same reason as line 5: missing binding, not required, no default."
+    },
+    {
+      "id": "line-7a",
+      "label": "Line 7a — Foreign account? (Yes/No)",
+      "type": "radio-group",
+      "page": 1,
+      "binding": "$.return.foreign.account",
+      "required": true,
+      "options": [
+        {
+          "value": true,
+          "label": "Yes",
+          "rect": {
+            "x": 539.4,
+            "y": 649,
+            "w": 10,
+            "h": 10
+          }
+        },
+        {
+          "value": false,
+          "label": "No",
+          "rect": {
+            "x": 561,
+            "y": 649,
+            "w": 10,
+            "h": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "line-7a-fincen",
+      "label": "Line 7a — Required to file FinCEN Form 114? (Yes/No)",
+      "type": "radio-group",
+      "page": 1,
+      "binding": "$.return.foreign.fincenRequired",
+      "required": false,
+      "options": [
+        {
+          "value": true,
+          "label": "Yes",
+          "rect": {
+            "x": 539.4,
+            "y": 685,
+            "w": 10,
+            "h": 10
+          }
+        },
+        {
+          "value": false,
+          "label": "No",
+          "rect": {
+            "x": 561,
+            "y": 685,
+            "w": 10,
+            "h": 10
+          }
+        }
+      ],
+      "notes": "Only answered when line 7a is Yes; absent from this data set, so skipped."
+    },
+    {
+      "id": "line-7b-country",
+      "label": "Line 7b — Name of foreign country",
+      "type": "text",
+      "page": 1,
+      "rect": {
+        "x": 273.6,
+        "y": 708,
+        "w": 252,
+        "h": 12
+      },
+      "binding": "$.return.foreign.countries",
+      "required": false
+    },
+    {
+      "id": "line-8",
+      "label": "Line 8 — Foreign trust grantor/transferor? (Yes/No)",
+      "type": "radio-group",
+      "page": 1,
+      "binding": "$.return.foreign.trust",
+      "required": true,
+      "options": [
+        {
+          "value": true,
+          "label": "Yes",
+          "rect": {
+            "x": 539.4,
+            "y": 745,
+            "w": 10,
+            "h": 10
+          }
+        },
+        {
+          "value": false,
+          "label": "No",
+          "rect": {
+            "x": 561,
+            "y": 745,
+            "w": 10,
+            "h": 10
+          }
+        }
+      ]
+    }
+  ]
+}
