@@ -44,7 +44,7 @@ The annotation document is the entire contract between the three parties. A tax 
 annotates each form revision once; engineers never hard-code a form; the caller's data
 model stays whatever shape it already is.
 
-## Sixty-second tour
+## Quick Overview
 
 Positioning is in PDF points from the **top-left** of the page (SPEC section 3). A wage line is
 one field:

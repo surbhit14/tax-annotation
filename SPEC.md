@@ -22,7 +22,7 @@ The key words MUST, MUST NOT, SHOULD, and MAY are to be interpreted as in RFC 21
 1. **Separation of roles.** The *annotator* measures a form once; the *implementer* writes
    a renderer once; the *caller* supplies data. None needs to know about the others'
    internals. The annotation document is the entire contract.
-2. **Implementable in an afternoon, in any language.** Everything a renderer must do
+2. **Implementable in any language.** Everything a renderer must do
    (path resolution, formatting, layout) is specified closed-form. The binding language is
    deliberately a small JSONPath subset so no third-party JSONPath engine is required.
 3. **Faithful to real IRS forms.** The field-type set was chosen by walking real forms:
