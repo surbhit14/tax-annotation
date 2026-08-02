@@ -461,7 +461,7 @@
     },
     {
       "id": "line-1a",
-      "label": "Line 1a — Total amount from Form(s) W-2, box 1",
+      "label": "Line 1a - Total amount from Form(s) W-2, box 1",
       "type": "currency",
       "page": 1,
       "rect": {
@@ -484,7 +484,7 @@
     },
     {
       "id": "line-2b",
-      "label": "Line 2b — Taxable interest",
+      "label": "Line 2b - Taxable interest",
       "type": "currency",
       "page": 1,
       "rect": {
@@ -498,7 +498,7 @@
     },
     {
       "id": "line-7a",
-      "label": "Line 7a — Capital gain or (loss)",
+      "label": "Line 7a - Capital gain or (loss)",
       "type": "currency",
       "page": 1,
       "rect": {
@@ -516,7 +516,7 @@
     },
     {
       "id": "line-9",
-      "label": "Line 9 — Total income",
+      "label": "Line 9 - Total income",
       "type": "currency",
       "page": 1,
       "rect": {
@@ -530,11 +530,11 @@
       "style": {
         "overflow": "error"
       },
-      "notes": "overflow:error — a total that cannot be printed in full must fail the render, never shrink below legibility or truncate."
+      "notes": "overflow:error: a total that cannot be printed in full must fail the render, never shrink below legibility or truncate."
     },
     {
       "id": "line-11a",
-      "label": "Line 11a — Adjusted gross income",
+      "label": "Line 11a - Adjusted gross income",
       "type": "currency",
       "page": 1,
       "rect": {
@@ -551,7 +551,7 @@
     },
     {
       "id": "line-24",
-      "label": "Line 24 — Total tax",
+      "label": "Line 24 - Total tax",
       "type": "currency",
       "page": 2,
       "rect": {
@@ -568,7 +568,7 @@
     },
     {
       "id": "routing-number",
-      "label": "Refund — routing number (line 35b)",
+      "label": "Refund - routing number (line 35b)",
       "type": "comb",
       "page": 2,
       "binding": "$.return.refund.directDeposit.routingNumber",
@@ -587,7 +587,7 @@
     },
     {
       "id": "account-type",
-      "label": "Refund — account type (line 35c)",
+      "label": "Refund - account type (line 35c)",
       "type": "radio-group",
       "page": 2,
       "binding": "$.return.refund.directDeposit.accountType",
@@ -618,7 +618,7 @@
     },
     {
       "id": "account-number",
-      "label": "Refund — account number (line 35d)",
+      "label": "Refund - account number (line 35d)",
       "type": "comb",
       "page": 2,
       "binding": "$.return.refund.directDeposit.accountNumber",

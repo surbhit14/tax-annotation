@@ -10,23 +10,23 @@ is the *why*.
 
 ### 1. Form knowledge is data, not code
 
-The central decision. All per-form facts — box positions, formats, which value goes
-where — live in an annotation document; a single generic renderer consumes any of them.
+The central decision. All per-form facts (box positions, formats, which value goes
+where) live in an annotation document; a single generic renderer consumes any of them.
 Consequences: adding a form (or absorbing the IRS's yearly layout changes) is a JSON
 edit by a tax-domain person, not an engineering release; and the renderer is written
-once per organization, in any language, against the SPEC §7 contract.
+once per organization, in any language, against the SPEC section 7 contract.
 
 ### 2. JSON as the carrier format
 
 Chosen over XML, YAML, and binary formats:
 
-- Every language parses JSON natively — essential when the goal is "anyone can build a
-  renderer with their own proprietary code."
+- Every language parses JSON natively, which is essential when the goal is "anyone can
+  build a renderer with their own proprietary code."
 - The caller's data is itself JSON-shaped, so the annotation and the data share one
   model (objects, arrays, scalars), and binding paths read naturally against both.
 - JSON Schema gives free, standardized machine validation
   ([schema/annotation.schema.json](schema/annotation.schema.json)).
-- Annotations must be human-reviewable — a tax expert should be able to diff this
+- Annotations must be human-reviewable: a tax expert should be able to diff this
   year's file against last year's. That rules out binary. YAML was rejected because its
   implicit typing (`no` → `false`) is a liability where a wrong value misfiles a
   return; XML would work but adds verbosity without adding capability.
@@ -37,7 +37,7 @@ Some IRS PDFs (including the 1040) are themselves fillable forms, so an obvious
 alternative was to define annotations as "set AcroForm field `f1_47` to X." I chose
 coordinate-based drawing instead:
 
-- **Coverage.** Many forms — most state forms, older federal forms, anything scanned —
+- **Coverage.** Many forms (most state forms, older federal forms, anything scanned)
   are flat PDFs with no fields at all. A coordinate-based spec covers every form; a
   field-based spec covers only the lucky ones.
 - **Fidelity.** Drawn output is identical everywhere and print-ready. AcroForm
@@ -45,7 +45,7 @@ coordinate-based drawing instead:
 - **Decoupling.** Internal field names (`topmostSubform[0].Page1[0].f1_47[0]`) are
   undocumented and unstable across years; rectangles are ground truth.
 
-Where AcroForm fields *do* exist, they're still useful — as a measurement source: the
+Where AcroForm fields *do* exist, they're still useful as a measurement source: the
 example's coordinates were extracted programmatically from the official PDF's own field
 rectangles, giving pixel-accurate output without manual measurement.
 
@@ -54,18 +54,18 @@ rectangles, giving pixel-accurate output without manual measurement.
 PDF's native coordinate system puts the origin at the *bottom*-left with y increasing
 upward. The spec deliberately uses the **top-left** with y increasing downward, because
 that is how humans, screenshots, and annotation tools measure a page. The renderer pays
-a one-line conversion (`pdfY = pageHeight − y − h`, SPEC §3); the annotator — who does
-the most manual work — gets the intuitive convention. Points (1/72") because that is
+a one-line conversion (`pdfY = pageHeight − y − h`, SPEC section 3); the annotator, who
+does the most manual work, gets the intuitive convention. Points (1/72") because that is
 the PDF's own unit, making measurements transferable without scaling.
 
 ### 5. A deliberately tiny JSONPath subset for bindings
 
 Bindings (`$.return.dependents[2].ssn`) support only dot-members and explicit numeric
-indices — no wildcards, filters, or recursive descent. Rationale: every path names
+indices, with no wildcards, filters, or recursive descent. Rationale: every path names
 exactly one value (no ambiguity about what prints in a box), and resolution is ~15
 lines of code in any language, so no implementer needs a third-party JSONPath engine.
 Computed values are handled by an explicit, enumerated transform pipeline (`sum`,
-`concat`, `round`, … — SPEC §6.4) rather than a general expression language: powerful
+`concat`, `round`, and more; SPEC section 6.4) rather than a general expression language: powerful
 enough for "total of box 1 across all W-2s," constrained enough to audit.
 
 ### 6. Field types model tax-form structure, not just "text at x,y"
@@ -73,7 +73,7 @@ enough for "total of box 1 across all W-2s," constrained enough to audit.
 The eight types were derived by walking the real Form 1040. One-character-per-box combs
 (SSNs), one-answer-of-N radio groups (filing status), and repeating dependent
 entries are *structural* features of tax forms. Making them first-class means the
-annotation carries intent — "9 digits, one per box, error on 7" — instead of each
+annotation carries intent ("9 digits, one per box, error on 7") instead of each
 renderer re-inventing the same conventions on top of free text, differently.
 
 ### 7. Fail-loud defaults, because the domain is money
@@ -86,7 +86,7 @@ explicitly opts into truncation or IRS-style continuation statements. Missing da
 follows one three-way rule (required → error; `default` → use it; else → leave blank)
 and renderers are forbidden from inventing fallbacks.
 
-### 8. Table repetition is a 2-D offset — a lesson from testing against reality
+### 8. Table repetition is a 2-D offset: a lesson from testing against reality
 
 My first table model repeated rows downward, like Schedule B. Rendering against the
 actual 2025 Form 1040 revealed that its four dependents run **left-to-right** as grid
@@ -102,7 +102,7 @@ of it.
 coordinates for the 2025 revision are simply facts about that revision. Yearly updates
 are a new data file with a diff a reviewer can read. `specVersion` versions the format
 itself separately, and a renderer must reject documents whose format it doesn't fully
-understand — an old renderer can never silently mis-print a newer annotation.
+understand: an old renderer can never silently mis-print a newer annotation.
 
 ### 10. Three redundant expressions of one contract
 
@@ -117,9 +117,9 @@ in implementers' *code*. Each guards a different failure mode for a different au
 
 Roughly in the order I would build them. A property they all share: **none changes the
 architecture.** Each is new vocabulary on the annotation document, consumed by the
-same six-step pipeline — the sign that the core design is load-bearing.
+same six-step pipeline, which is the sign that the core design is load-bearing.
 
-### 1. Conditional fields — "print X only if Y"
+### 1. Conditional fields: "print X only if Y"
 
 Today every field always attempts to render, and "don't fill the spouse block for a
 single filer" works only because the data happens to lack a spouse object. The
@@ -131,23 +131,23 @@ enhancement is a `when` predicate on any field:
 
 so the *annotation itself* declares when a field applies, instead of relying on the
 shape of the data. It would reuse the `checkedWhen` predicate grammar (`equals` /
-`truthy`) so the spec grows no new concepts — a checkbox already is a conditional
+`truthy`) so the spec grows no new concepts: a checkbox already is a conditional
 mark; `when` generalizes the same idea to every field type.
 
 ### 2. Automatic continuation statements
 
-Today a 5th dependent on the 4-slot form produces a *warning* — "1 item requires a
-continuation statement" — and a human must build that attachment. The actual IRS
+Today a 5th dependent on the 4-slot form produces a *warning* ("1 item requires a
+continuation statement") and a human must build that attachment. The actual IRS
 procedure is to attach an extra page listing the overflow entries. The next step: the
 table's annotation defines an attachment template (a page layout with its own columns),
-and the renderer *generates the attachment automatically* — overflow entries get
+and the renderer *generates the attachment automatically*: overflow entries get
 printed on an appended statement page instead of merely being reported as a problem.
 
-### 3. Field-level data validation — fail before ink
+### 3. Field-level data validation: fail before ink
 
 The renderer currently validates *shape* (a currency value must be a number; an SSN
 comb needs exactly 9 characters) but not *plausibility*: `999-99-9999` has nine
-digits, so it renders — yet it isn't an issuable SSN, and routing numbers carry a
+digits, so it renders, yet it isn't an issuable SSN, and routing numbers carry a
 check digit that can be verified arithmetically. The enhancement is declarative rules
 on bindings:
 
@@ -158,14 +158,14 @@ on bindings:
 
 plus cross-field rules ("line 9 must equal the sum of lines 1z–8"). Bad data then
 fails *before* any ink hits the page, with errors phrased in tax terms a reviewer
-understands — extending the fail-loud principle (decision #7) one layer earlier.
+understands, extending the fail-loud principle (decision #7) one layer earlier.
 
 ### 4. A visual annotation editor
 
-Annotating a form today means measuring coordinates and typing JSON — the most
+Annotating a form today means measuring coordinates and typing JSON, the most
 tedious part of the whole system. The tool: render the blank PDF; the tax expert
 *drags a rectangle* over a box, picks a type from a dropdown, clicks a value in a
-sample-data tree — and the editor emits conforming JSON. Annotation drops from hours
+sample-data tree, and the editor emits conforming JSON. Annotation drops from hours
 of measuring to minutes of clicking, and the output is schema-validated by
 construction. The renderer's `--debug` overlay (red outlines + field ids) is the seed:
 it is already the "view" half of this tool; the editor adds the "click to create" half.
@@ -180,18 +180,18 @@ support.
 
 ### 6. Multi-copy and multi-part forms
 
-W-2s print as Copies A/B/C/D — identical data at different page offsets. An
+W-2s print as Copies A/B/C/D: identical data at different page offsets. An
 annotation-level "stamp this field set N times with per-copy offsets" is the table
 `repeat {dx, dy}` mechanism reused at whole-form scale.
 
 ### 7. Barcode/OCR zones
 
 Many state returns require 2-D barcodes (PDF417) encoding the return data. A
-`barcode` field type bound to a *set* of paths fits the existing model cleanly — it
+`barcode` field type bound to a *set* of paths fits the existing model cleanly: it
 is one more entry in the type union, one more case in the renderer's switch.
 
 ### 8. Registry & tooling
 
 A versioned repository of annotations keyed by (jurisdiction, form, revision), with CI
-that schema-validates every file and golden-renders sample data on every change — so
+that schema-validates every file and golden-renders sample data on every change, so
 annotations get the same review rigor as code, which decision #1 turned them into.

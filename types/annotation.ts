@@ -1,16 +1,16 @@
 /**
- * Tax Form Annotation Specification — TypeScript definitions
+ * Tax Form Annotation Specification: TypeScript definitions
  * specVersion 1.0
  *
  * These types mirror schema/annotation.schema.json. The format is one contract
  * expressed three ways, for three audiences:
  *
- *   SPEC.md                  — normative prose, for humans: behavior that
+ *   SPEC.md                  : normative prose, for humans: behavior that
  *                              structure can't express (rounding, overflow,
  *                              error rules).
- *   annotation.schema.json   — machine validation of annotation FILES, at
+ *   annotation.schema.json   : machine validation of annotation FILES, at
  *                              authoring time.
- *   this file                — compile-time checking of implementers' CODE:
+ *   this file                : compile-time checking of implementers' CODE:
  *                              a renderer that imports these types gets the
  *                              schema's rules enforced by its own compiler.
  *
@@ -85,15 +85,15 @@ export interface Style {
 }
 
 /**
- * Binding path (SPEC.md §6). A restricted JSONPath subset:
- *   "$"  — data-set root         "$.taxpayer.address.state"
- *   "@"  — current table row     "@.ssn"   (valid only inside table columns)
+ * Binding path (SPEC.md section 6). A restricted JSONPath subset:
+ *   "$"  : data-set root         "$.taxpayer.address.state"
+ *   "@"  : current table row     "@.ssn"   (valid only inside table columns)
  * Segments: dot-separated identifiers, each optionally followed by one
  * numeric index, e.g. "$.dependents[2].name".
  */
 export type Binding = string;
 
-/** A transform step, applied left-to-right before formatting (SPEC.md §6.4). */
+/** A transform step, applied left-to-right before formatting (SPEC.md section 6.4). */
 export type Transform = string | { fn: string; args?: Record<string, unknown> };
 
 interface FieldBase {

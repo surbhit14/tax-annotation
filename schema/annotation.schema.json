@@ -74,7 +74,7 @@
     "binding": {
       "type": "string",
       "pattern": "^[$@]\\.[A-Za-z_][A-Za-z0-9_]*(\\[[0-9]+\\])?(\\.[A-Za-z_][A-Za-z0-9_]*(\\[[0-9]+\\])?)*$|^[$@]$",
-      "description": "Path into the data set. \"$\" is the data-set root; \"@\" is the current row item (valid only inside table columns). See SPEC.md §6."
+      "description": "Path into the data set. \"$\" is the data-set root; \"@\" is the current row item (valid only inside table columns). See SPEC.md section 6."
     },
 
     "rect": {
@@ -110,7 +110,7 @@
           "type": "string",
           "enum": ["shrink", "truncate", "error"],
           "default": "shrink",
-          "description": "What to do when formatted text will not fit the rect at the requested size. See SPEC.md §7.4."
+          "description": "What to do when formatted text will not fit the rect at the requested size. See SPEC.md section 7.4."
         },
         "minFontSize": { "type": "number", "exclusiveMinimum": 0, "default": 5, "description": "Floor for \"shrink\" overflow. Below this, fall back to \"error\"." },
         "lineHeight": { "type": "number", "exclusiveMinimum": 0, "description": "Multiplier for multiline text. Default 1.15." }
@@ -118,7 +118,7 @@
     },
 
     "transform": {
-      "description": "A transform step: either a bare name or a name with arguments. See SPEC.md §6.4 for the built-in set.",
+      "description": "A transform step: either a bare name or a name with arguments. See SPEC.md section 6.4 for the built-in set.",
       "oneOf": [
         { "type": "string", "minLength": 1 },
         {
@@ -359,7 +359,7 @@
           "type": "string",
           "enum": ["continuation", "truncate", "error"],
           "default": "error",
-          "description": "Behavior when the bound array has more items than repeat.max. See SPEC.md §5.8."
+          "description": "Behavior when the bound array has more items than repeat.max. See SPEC.md section 5.8."
         },
         "columns": {
           "type": "array",

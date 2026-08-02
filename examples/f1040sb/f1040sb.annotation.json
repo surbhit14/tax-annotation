@@ -4,7 +4,7 @@
   "form": {
     "id": "f1040sb",
     "revision": "2025",
-    "title": "Schedule B (Form 1040) — Interest and Ordinary Dividends",
+    "title": "Schedule B (Form 1040) - Interest and Ordinary Dividends",
     "jurisdiction": "US-IRS",
     "sourcePdf": "f1040sb--2025.pdf"
   },
@@ -75,7 +75,7 @@
     },
     {
       "id": "line-1-payers",
-      "label": "Line 1 — List name of payer / Amount (interest)",
+      "label": "Line 1 - List name of payer / Amount (interest)",
       "type": "table",
       "page": 1,
       "binding": "$.return.income.interest.payers",
@@ -111,11 +111,11 @@
           "required": true
         }
       ],
-      "notes": "Classic top-to-bottom table: the form provides 14 printed rows at a 12 pt pitch, so entries repeat straight down (dy) — the mirror image of the 1040's left-to-right dependents grid (dx)."
+      "notes": "Classic top-to-bottom table: the form provides 14 printed rows at a 12 pt pitch, so entries repeat straight down (dy), the mirror image of the 1040's left-to-right dependents grid (dx)."
     },
     {
       "id": "line-2",
-      "label": "Line 2 — Total interest",
+      "label": "Line 2 - Total interest",
       "type": "currency",
       "page": 1,
       "rect": {
@@ -134,11 +134,11 @@
         }
       ],
       "required": true,
-      "notes": "Computed at render time. The sum runs over the raw cent values and is rounded once at formatting — not a sum of already-rounded rows."
+      "notes": "Computed at render time. The sum runs over the raw cent values and is rounded once at formatting, not a sum of already-rounded rows."
     },
     {
       "id": "line-3",
-      "label": "Line 3 — Excludable interest on series EE and I U.S. savings bonds",
+      "label": "Line 3 - Excludable interest on series EE and I U.S. savings bonds",
       "type": "currency",
       "page": 1,
       "rect": {
@@ -149,11 +149,11 @@
       },
       "binding": "$.return.income.interest.excludable",
       "required": false,
-      "notes": "Not present in the sample data set: not required and no default, so the box is left blank (SPEC §6.3)."
+      "notes": "Not present in the sample data set: not required and no default, so the box is left blank (SPEC section 6.3)."
     },
     {
       "id": "line-4",
-      "label": "Line 4 — Subtract line 3 from line 2",
+      "label": "Line 4 - Subtract line 3 from line 2",
       "type": "currency",
       "page": 1,
       "rect": {
@@ -176,7 +176,7 @@
     },
     {
       "id": "line-5-payers",
-      "label": "Line 5 — List name of payer / Amount (ordinary dividends)",
+      "label": "Line 5 - List name of payer / Amount (ordinary dividends)",
       "type": "table",
       "page": 1,
       "binding": "$.return.income.dividends.payers",
@@ -216,7 +216,7 @@
     },
     {
       "id": "line-6",
-      "label": "Line 6 — Total ordinary dividends",
+      "label": "Line 6 - Total ordinary dividends",
       "type": "currency",
       "page": 1,
       "rect": {
@@ -239,7 +239,7 @@
     },
     {
       "id": "line-7a",
-      "label": "Line 7a — Foreign account? (Yes/No)",
+      "label": "Line 7a - Foreign account? (Yes/No)",
       "type": "radio-group",
       "page": 1,
       "binding": "$.return.foreign.account",
@@ -269,7 +269,7 @@
     },
     {
       "id": "line-7a-fincen",
-      "label": "Line 7a — Required to file FinCEN Form 114? (Yes/No)",
+      "label": "Line 7a - Required to file FinCEN Form 114? (Yes/No)",
       "type": "radio-group",
       "page": 1,
       "binding": "$.return.foreign.fincenRequired",
@@ -300,7 +300,7 @@
     },
     {
       "id": "line-7b-country",
-      "label": "Line 7b — Name of foreign country",
+      "label": "Line 7b - Name of foreign country",
       "type": "text",
       "page": 1,
       "rect": {
@@ -314,7 +314,7 @@
     },
     {
       "id": "line-8",
-      "label": "Line 8 — Foreign trust grantor/transferor? (Yes/No)",
+      "label": "Line 8 - Foreign trust grantor/transferor? (Yes/No)",
       "type": "radio-group",
       "page": 1,
       "binding": "$.return.foreign.trust",

@@ -1,7 +1,7 @@
 /**
  * Proof-of-concept renderer for the Tax Form Annotation Specification (v1.0).
  *
- * Implements the SPEC.md §7 pipeline over pdf-lib:
+ * Implements the SPEC.md section 7 pipeline over pdf-lib:
  *   resolve → required/default → transform → validate → format → lay out & draw
  *
  * Written in TypeScript against types/annotation.ts, so the compiler enforces
@@ -56,7 +56,7 @@ const ann = annRaw as AnnotationDocument;
 
 const warnings: string[] = [];
 
-// ------------------------------------------------- binding resolution (§6) -
+// ------------------------------------------- binding resolution (section 6) -
 // The entire binding grammar as one regex: "$" or "@", then any number of
 // ".member" segments, each optionally followed by one "[index]".
 const PATH_RE = /^[$@](\.[A-Za-z_][A-Za-z0-9_]*(\[[0-9]+\])?)*$/;
@@ -67,7 +67,7 @@ const PATH_RE = /^[$@](\.[A-Za-z_][A-Za-z0-9_]*(\[[0-9]+\])?)*$/;
  *   resolvePath("@.ssn", oneDependent)          → oneDependent.ssn
  * "$" starts at the whole data set; "@" starts at `rowItem` (the current table
  * entry) and is an error anywhere else. A path that runs into anything missing
- * returns `undefined` — "no value" is a normal, specified outcome that the
+ * returns `undefined`; "no value" is a normal, specified outcome that the
  * required/default rule handles later, not an exception.
  */
 function resolvePath(binding: string, rowItem?: unknown): unknown {
@@ -87,11 +87,11 @@ function resolvePath(binding: string, rowItem?: unknown): unknown {
   return cur === null ? undefined : cur;
 }
 
-// ------------------------------------------------------- transforms (§6.4) -
+// ------------------------------------------------- transforms (section 6.4) -
 /**
  * Run the field's transform pipeline: each step takes the previous step's
  * output as input, left to right. This is how a printed value that exists
- * nowhere in the data gets computed — e.g. line 1a binds to the w2s ARRAY and
+ * nowhere in the data gets computed; e.g. line 1a binds to the w2s ARRAY and
  * `sum {path: "@.box1"}` collapses it to one number ("@" here means each array
  * element in turn). An unrecognized transform name throws: silently passing a
  * value through un-transformed would print a wrong number on a tax form.
@@ -143,7 +143,7 @@ function applyTransforms(val: unknown, transforms: Transform[] | undefined, fiel
 
 /**
  * Guard for numeric transforms: money math on a string is always a bug.
- * (An assertion function — after calling it, the compiler narrows v to number.)
+ * (An assertion function: after calling it, the compiler narrows v to number.)
  */
 function mustBeNumber(v: unknown, id: string, fn: string): asserts v is number {
   if (typeof v !== "number") throw fieldError(id, `${fn}: input is not a number`);
@@ -161,11 +161,11 @@ function fieldError(id: string, msg: string): Error {
   return new Error(`[${id}] ${msg}`);
 }
 
-// ------------------------------------------------------- formatting (§7.2) -
+// ------------------------------------------------- formatting (section 7.2) -
 /**
  * Turn a raw number into the string that gets printed, per the field's
  * `format` options: round, add thousands commas, wrap negatives in parens
- * — 189690.74 → "189,691", -3000 → "(3,000)". Returns null for zero with
+ * (189690.74 → "189,691", -3000 → "(3,000)"). Returns null for zero with
  * `zero: "blank"`, which tells the caller to draw nothing at all.
  */
 function formatNumber(v: number, format: NumberFormat & { symbol?: boolean } = {}, isCurrency = false): string | null {
@@ -174,7 +174,7 @@ function formatNumber(v: number, format: NumberFormat & { symbol?: boolean } = {
   if (v2 === 0) {
     const zero = format.zero ?? "print";
     if (zero === "blank") return null; // caller skips the field
-    if (zero === "dash") return "—";
+    if (zero === "dash") return String.fromCharCode(0x2014); // em dash, per SPEC section 7.2
   }
   let s = Math.abs(v2).toLocaleString("en-US", {
     minimumFractionDigits: dec,
@@ -188,7 +188,7 @@ function formatNumber(v: number, format: NumberFormat & { symbol?: boolean } = {
 
 /**
  * Reformat an ISO date ("2026-04-10") into the form's pattern ("04/10/2026").
- * Input that isn't YYYY-MM-DD is an error — guessing at ambiguous dates
+ * Input that isn't YYYY-MM-DD is an error; guessing at ambiguous dates
  * (is 04/10 April or October?) is exactly what a tax renderer must not do.
  */
 function formatDate(v: unknown, pattern: string | undefined, id: string): string {
@@ -201,8 +201,8 @@ function formatDate(v: unknown, pattern: string | undefined, id: string): string
     .replace("DD", m[3]);
 }
 
-// ------------------------------------------------------------ styles (§4) --
-/** A style with every property resolved — what the cascade produces. */
+// ---------------------------------------------------- styles (section 4) ---
+/** A style with every property resolved: what the cascade produces. */
 interface EffectiveStyle {
   font: { family: string; size: number; weight: "normal" | "bold"; color: string };
   align: NonNullable<Style["align"]>;
@@ -213,7 +213,7 @@ interface EffectiveStyle {
   lineHeight: number;
 }
 
-// The spec's built-in defaults — the bottom layer of the style cascade.
+// The spec's built-in defaults: the bottom layer of the style cascade.
 const SPEC_STYLE: EffectiveStyle = {
   font: { family: "Helvetica", size: 9, weight: "normal", color: "#000000" },
   align: "left", vAlign: "middle", padding: 2,
@@ -277,7 +277,7 @@ async function main(): Promise<void> {
     return { page, meta };
   }
 
-  // The one-line price of the spec's human-friendly coordinates (§3): the
+  // The one-line price of the spec's human-friendly coordinates (section 3): the
   // annotation measures y DOWN from the page top; PDF measures y UP from the
   // bottom. Given a box's top y and height, return the PDF y of its bottom edge.
   const toPdfY = (meta: Page, y: number, h: number): number => meta.height - y - h;
@@ -296,9 +296,9 @@ async function main(): Promise<void> {
   }
 
   /**
-   * Fit and draw a formatted string inside a rect (§7.3–7.4): inset by
-   * padding, word-wrap if the field is multiline, then check it fits. If it
-   * doesn't, the style's overflow policy decides — "shrink" steps the font
+   * Fit and draw a formatted string inside a rect (sections 7.3 and 7.4):
+   * inset by padding, word-wrap if the field is multiline, then check it fits.
+   * If it doesn't, the style's overflow policy decides: "shrink" steps the font
    * down to minFontSize then ERRORS, "truncate" cuts chars with a warning,
    * "error" throws immediately. There is no path where text silently
    * disappears. Finally apply align/vAlign and draw each line.
@@ -372,7 +372,7 @@ async function main(): Promise<void> {
 
   /**
    * Draw a checkbox/radio mark centered in its box, sized to ~80% of the
-   * box's smaller side: "X" (Helvetica letter), "check" (ZapfDingbats — its
+   * box's smaller side: "X" (Helvetica letter), "check" (ZapfDingbats; its
    * "3" glyph is a checkmark), or "fill" (solid rectangle, inset 15%).
    */
   function drawMark(page: PDFPage, meta: Page, rect: Rect, mark: "X" | "check" | "fill", style: EffectiveStyle): void {
@@ -398,16 +398,16 @@ async function main(): Promise<void> {
   }
 
   /**
-   * Render ONE field from the annotation — the heart of the program, running
-   * the SPEC §7 pipeline:  resolve → required/default → transform → validate
+   * Render ONE field from the annotation, the heart of the program, running
+   * the SPEC section 7 pipeline:  resolve → required/default → transform → validate
    * → format → draw.
    *
    * Called plain (renderField(field)) for top-level fields. A `table` field
    * doesn't draw anything itself: it resolves its array and calls renderField
    * AGAIN for each column of each entry, passing three extras that make the
    * recursion work:
-   *   rowItem — the current array element, which "@" bindings resolve against
-   *   ox, oy  — (i·dx, i·dy), shifting the column's entry-1 coordinates to entry i+1
+   *   rowItem: the current array element, which "@" bindings resolve against
+   *   ox, oy: (i·dx, i·dy), shifting the column's entry-1 coordinates to entry i+1
    * So a column is rendered by the exact same code as any other field; tables
    * add no drawing logic of their own.
    */
@@ -440,20 +440,20 @@ async function main(): Promise<void> {
       return;
     }
 
-    // Scalar branch — the six pipeline steps for every non-table type.
-    // Step 1: resolve — follow the binding into the data (or the table row).
+    // Scalar branch: the six pipeline steps for every non-table type.
+    // Step 1 (resolve): follow the binding into the data (or the table row).
     let v: unknown = field.binding !== undefined ? resolvePath(field.binding, rowItem) : undefined;
-    // Step 2: required/default — the one three-way rule for missing values:
+    // Step 2 (required/default): the one three-way rule for missing values:
     // required → error; a `default` → use it; otherwise skip (leave box blank).
     if (v === undefined) {
       if (field.required) throw fieldError(field.id, "required value is missing from the data set");
       if ("default" in field) v = field.default;
       else return; // skip
     }
-    // Step 3: transform — compute the derived value (sum, concat, ...).
+    // Step 3 (transform): compute the derived value (sum, concat, ...).
     v = applyTransforms(v, field.transforms, field.id);
 
-    // Steps 4–6: validate / format / draw — these depend on the field type,
+    // Steps 4-6 (validate / format / draw): these depend on the field type,
     // so each case does its own version of them.
     switch (field.type) {
       case "text": {
@@ -536,10 +536,10 @@ async function main(): Promise<void> {
       }
       default: {
         // With the full Field union handled above, this arm is unreachable to
-        // the compiler (field: never) — but annotations arrive as runtime
-        // JSON, so keep the §8 fail-loud check for types the compiler can't see.
+        // the compiler (field: never), but annotations arrive as runtime
+        // JSON, so keep the section 8 fail-loud check for types the compiler can't see.
         const unknownType = (field as { type: string; id?: string });
-        throw fieldError(unknownType.id ?? "?", `unknown field type "${unknownType.type}"`); // §8: never skip silently
+        throw fieldError(unknownType.id ?? "?", `unknown field type "${unknownType.type}"`); // section 8: never skip silently
       }
     }
   }
